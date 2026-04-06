@@ -1,0 +1,7 @@
+{
+  "name": "MyWarung",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}
