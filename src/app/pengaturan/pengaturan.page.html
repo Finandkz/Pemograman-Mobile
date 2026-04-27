@@ -1,0 +1,54 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Pengaturan</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+  <div class="settings-container">
+    <h2>Manajemen Data</h2>
+    <p>Cadangkan atau pulihkan data MyWarung Anda.</p>
+
+    <ion-card class="setting-card" button (click)="backupData()">
+      <ion-card-content>
+        <div class="icon-wrapper">
+          <ion-icon name="cloud-download-outline"></ion-icon>
+        </div>
+        <div class="setting-info">
+          <h3>Backup Data</h3>
+          <p>Simpan data barang Anda ke dalam file</p>
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+    <ion-card class="setting-card" button (click)="fileInput.click()">
+      <ion-card-content>
+        <div class="icon-wrapper">
+          <ion-icon name="cloud-upload-outline"></ion-icon>
+        </div>
+        <div class="setting-info">
+          <h3>Restore Data</h3>
+          <p>Pulihkan data dari file backup (.zip)</p>
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+    <ion-card class="setting-card" button routerLink="/about">
+      <ion-card-content>
+        <div class="icon-wrapper">
+          <ion-icon name="information-circle-outline"></ion-icon>
+        </div>
+        <div class="setting-info">
+          <h3>About</h3>
+          <p>Informasi mengenai aplikasi</p>
+        </div>
+      </ion-card-content>
+    </ion-card>
+    
+    <input type="file" #fileInput (change)="restoreData($event)" accept=".zip" hidden />
+  </div>
+</ion-content>
+

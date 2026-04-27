@@ -1,0 +1,35 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/pengaturan"></ion-back-button>
+    </ion-buttons>
+    <ion-title>About</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+  <div class="about-container">
+    <div class="logo-container">
+      <div class="logo-box">
+        <img src="assets/logo.png" alt="Logo MyWarung" class="app-logo-img" />
+      </div>
+      <h1 class="app-name">MyWarung</h1>
+      <p class="app-version">Versi 1.1</p>
+    </div>
+
+    <div class="info-section">
+      <ion-card class="info-card">
+        <ion-card-header>
+          <ion-icon name="information-circle"></ion-icon>
+          <ion-card-title>Tentang Aplikasi</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <p>
+            MyWarung adalah aplikasi manajemen inventaris yang dirancang khusus untuk mempermudah operasional usaha kecil dan menengah (UMKM). Dengan MyWarung, Anda dapat mencatat dan mengelola data barang, dan mengamankan data Anda melalui sistem pencadangan.
+          </p>
+        </ion-card-content>
+      </ion-card>
+
+    </div>
+  </div>
+</ion-content>

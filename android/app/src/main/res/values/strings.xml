@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">MyWarung</string>
+    <string name="title_activity_main">MyWarung</string>
+    <string name="package_name">com.mywarung.app</string>
+    <string name="custom_url_scheme">com.mywarung.app</string>
+</resources>

@@ -1,20 +1,123 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>
-      Blank
-    </ion-title>
+<ion-content fixed-slot-placement="before">
+  <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <ion-header>
+  <ion-toolbar class="main-toolbar">
+    <div class="brand-container" routerLink="/pengaturan" style="cursor: pointer;">
+      <img src="assets/logo.png" class="brand-logo" />
+      <div class="brand-title">MyWarung</div>
+    </div>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Blank</ion-title>
-    </ion-toolbar>
-  </ion-header>
+  <ion-searchbar [(ngModel)]="searchTerm" (ngModelChange)="onSearchChange()" placeholder="Cari barang..." animated="true"></ion-searchbar>
 
-  <div id="container">
-    <strong>Ready to create an app?</strong>
-    <p>Start with Ionic <a target="_blank" rel="noopener noreferrer" href="https://ionicframework.com/docs/components">UI Components</a></p>
+  <div class="category-container">
+    <ion-chip [outline]="selectedCategory !== 'Semua'" color="dark" (click)="setCategory('Semua')">
+      <ion-label>Semua</ion-label>
+    </ion-chip>
+    <ion-chip [outline]="selectedCategory !== 'Makanan'" color="primary" (click)="setCategory('Makanan')">
+      <ion-label>Makanan</ion-label>
+    </ion-chip>
+    <ion-chip [outline]="selectedCategory !== 'Minuman'" color="secondary" (click)="setCategory('Minuman')">
+      <ion-label>Minuman</ion-label>
+    </ion-chip>
+    <ion-chip [outline]="selectedCategory !== 'Cemilan'" color="tertiary" (click)="setCategory('Cemilan')">
+      <ion-label>Cemilan</ion-label>
+    </ion-chip>
+    <ion-chip [outline]="selectedCategory !== 'Lainnya'" color="success" (click)="setCategory('Lainnya')">
+      <ion-label>Lainnya</ion-label>
+    </ion-chip>
   </div>
+  <ion-fab horizontal="end" vertical="bottom" slot="fixed">
+    <ion-fab-button id="present-modal">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+
+  <div class="grid-container">
+    <ion-grid>
+      <ion-row>
+        <ion-col size="6" size-md="4" size-lg="3" *ngFor="let item of displayItems" [@fadeAnimation]>
+          <ion-card button (click)="presentActionSheet(item, items.indexOf(item))" class="product-card">
+            
+            <div class="product-image-container">
+              <img *ngIf="item.foto" [src]="item.displayFoto || item.foto" alt="foto barang" class="product-image" />
+              <ion-icon *ngIf="!item.foto" name="image-outline" color="medium" class="product-image-placeholder"></ion-icon>
+            </div>
+            
+            <ion-card-header class="product-header">
+              <ion-card-subtitle class="product-subtitle">{{ item.kategori }}</ion-card-subtitle>
+              <ion-card-title class="product-title">{{ item.nama }}</ion-card-title>
+            </ion-card-header>
+            
+            <ion-card-content class="product-content">
+              <ion-text color="primary" class="product-price">
+                Rp {{ item.harga | number }}
+              </ion-text>
+            </ion-card-content>
+
+          </ion-card>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </div>
+
+  <div *ngIf="displayItems.length === 0 && searchTerm" class="empty-search">
+    <ion-icon name="search-outline"></ion-icon>
+    <p>Barang "<strong>{{ searchTerm }}</strong>" tidak tersedia</p>
+  </div>
+
+  <ion-infinite-scroll (ionInfinite)="onIonInfinite($event)">
+    <ion-infinite-scroll-content></ion-infinite-scroll-content>
+  </ion-infinite-scroll>
+
+  <ion-modal trigger="present-modal" [initialBreakpoint]="0.85" [breakpoints]="[0, 0.85, 1]">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar>
+          <ion-title>{{ editIndex !== null ? 'Edit Barang' : 'Tambah Barang' }}</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="dismissModal()">Batal</ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content class="ion-padding">
+
+        <div class="photo-upload-container" (click)="fileInput.click()">
+          <img [src]="newItem.displayFoto || newItem.foto" *ngIf="newItem.foto" class="image-preview" />
+          <div *ngIf="!newItem.foto" class="placeholder-text">
+            <ion-icon name="camera" size="large"></ion-icon>
+            <p>Ketuk untuk unggah foto</p>
+          </div>
+        </div>
+        <input type="file" #fileInput (change)="onFileSelected($event)" accept="image/*" hidden />
+
+        <ion-item>
+          <ion-label position="stacked">Nama Barang</ion-label>
+          <ion-input type="text" [(ngModel)]="newItem.nama" placeholder="Contoh: Beras Premium"></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="stacked">Kategori</ion-label>
+          <ion-select [(ngModel)]="newItem.kategori" placeholder="Pilih Kategori">
+            <ion-select-option value="Makanan">Makanan</ion-select-option>
+            <ion-select-option value="Minuman">Minuman</ion-select-option>
+            <ion-select-option value="Cemilan">Cemilan</ion-select-option>
+            <ion-select-option value="Lainnya">Lainnya</ion-select-option>
+          </ion-select>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="stacked">Harga (Rp)</ion-label>
+          <ion-input type="number" [(ngModel)]="newItem.harga" placeholder="Contoh: 75000"></ion-input>
+        </ion-item>
+
+        <ion-button expand="block" shape="round" color="primary" class="btn-simpan" (click)="simpanBarang()" [disabled]="!newItem.nama || !newItem.harga || !newItem.kategori">Simpan Barang</ion-button>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+
 </ion-content>

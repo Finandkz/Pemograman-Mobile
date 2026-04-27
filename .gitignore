@@ -6,6 +6,7 @@
 .tmp
 *.tmp
 *.tmp.*
+tmp.b64
 UserInterfaceState.xcuserstate
 $RECYCLE.BIN/
 
