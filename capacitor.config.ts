@@ -17,7 +17,7 @@ const config: CapacitorConfig = {
       layoutName: "custom_splash",
     },
     Keyboard: {
-      resize: KeyboardResize.None
+      resize: KeyboardResize.Native
     }
   },
 };
