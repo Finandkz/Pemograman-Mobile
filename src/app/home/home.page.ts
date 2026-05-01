@@ -4,6 +4,8 @@ import { trigger, style, animate, transition } from '@angular/animations';
 import { Storage } from '@ionic/storage-angular';
 import { Filesystem, Directory } from '@capacitor/filesystem';
 import { Capacitor } from '@capacitor/core';
+import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
+import { Keyboard } from '@capacitor/keyboard';
 
 @Component({
   selector: 'app-home',
@@ -129,7 +131,20 @@ export class HomePage implements OnInit {
     }
   }
 
-  ngOnInit() {}
+  ngOnInit() {
+    if (Capacitor.isNativePlatform()) {
+      Keyboard.addListener('keyboardWillShow', () => {
+        if (this.modal) {
+          this.modal.setCurrentBreakpoint(1);
+        }
+      });
+      Keyboard.addListener('keyboardWillHide', () => {
+        if (this.modal) {
+          this.modal.setCurrentBreakpoint(0.85);
+        }
+      });
+    }
+  }
 
   async handleRefresh(event: any) {
     await this.loadItems();
@@ -181,32 +196,59 @@ export class HomePage implements OnInit {
     this.resetForm();
   }
 
-  async onFileSelected(event: any) {
-    const file = event.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = async (e: any) => {
-        const base64Data = e.target.result as string;
-        try {
-          const timestamp = new Date().getTime();
-          const fileName = `img_${timestamp}.jpeg`;
-          const base64Content = base64Data.split(',')[1];
-          
-          await Filesystem.writeFile({
-            path: fileName,
-            data: base64Content,
-            directory: Directory.Data
-          });
-          
-          this.newItem.foto = fileName;
-          this.newItem.displayFoto = await this.getDisplayUrl(fileName);
-        } catch(error) {
-           console.error("Failed to save image, fallback to base64", error);
-           this.newItem.foto = base64Data;
-           this.newItem.displayFoto = base64Data;
+  async pilihFoto() {
+    const actionSheet = await this.actionSheetCtrl.create({
+      header: 'Pilih Sumber Foto',
+      mode: 'ios',
+      buttons: [
+        {
+          text: 'Ambil dari Kamera',
+          icon: 'camera',
+          handler: () => {
+            this.prosesAmbilFoto(CameraSource.Camera);
+          }
+        },
+        {
+          text: 'Pilih dari Galeri',
+          icon: 'image',
+          handler: () => {
+            this.prosesAmbilFoto(CameraSource.Photos);
+          }
+        },
+        {
+          text: 'Batal',
+          icon: 'close',
+          role: 'cancel'
         }
-      };
-      reader.readAsDataURL(file);
+      ]
+    });
+    await actionSheet.present();
+  }
+
+  async prosesAmbilFoto(sumber: CameraSource) {
+    try {
+      const image = await Camera.getPhoto({
+        quality: 90,
+        allowEditing: false,
+        resultType: CameraResultType.Base64,
+        source: sumber
+      });
+
+      if (image && image.base64String) {
+        const timestamp = new Date().getTime();
+        const fileName = `img_${timestamp}.jpeg`;
+        
+        await Filesystem.writeFile({
+          path: fileName,
+          data: image.base64String,
+          directory: Directory.Data
+        });
+        
+        this.newItem.foto = fileName;
+        this.newItem.displayFoto = await this.getDisplayUrl(fileName);
+      }
+    } catch (error) {
+      console.error("Gagal mengambil foto:", error);
     }
   }
 

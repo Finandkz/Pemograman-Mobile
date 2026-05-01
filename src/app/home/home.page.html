@@ -86,14 +86,13 @@
       </ion-header>
       <ion-content class="ion-padding">
 
-        <div class="photo-upload-container" (click)="fileInput.click()">
+        <div class="photo-upload-container" (click)="pilihFoto()">
           <img [src]="newItem.displayFoto || newItem.foto" *ngIf="newItem.foto" class="image-preview" />
           <div *ngIf="!newItem.foto" class="placeholder-text">
             <ion-icon name="camera" size="large"></ion-icon>
-            <p>Ketuk untuk unggah foto</p>
+            <p>Ketuk untuk ambil/unggah foto</p>
           </div>
         </div>
-        <input type="file" #fileInput (change)="onFileSelected($event)" accept="image/*" hidden />
 
         <ion-item>
           <ion-label position="stacked">Nama Barang</ion-label>

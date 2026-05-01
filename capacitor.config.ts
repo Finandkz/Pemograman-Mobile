@@ -1,4 +1,5 @@
 import type { CapacitorConfig } from '@capacitor/cli';
+import { KeyboardResize } from '@capacitor/keyboard';
 
 const config: CapacitorConfig = {
   appId: 'com.mywarung.app',
@@ -15,6 +16,9 @@ const config: CapacitorConfig = {
       splashFullScreen: false,
       layoutName: "custom_splash",
     },
+    Keyboard: {
+      resize: KeyboardResize.None
+    }
   },
 };
 
